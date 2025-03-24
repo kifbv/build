@@ -1,4 +1,4 @@
-name: "Rebuild Armbian"
+name: "kifbv / Rebuild Armbian"
 author: "https://github.com/armbian"
 description: "Build Armbian Linux"
 inputs:
