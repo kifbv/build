@@ -47,6 +47,7 @@ function do_main_configuration() {
 		unset VENDORSUPPORT,VENDORPRIVACY,VENDORBUGS,VENDORLOGO,ROOTPWD,MAINTAINER,MAINTAINERMAIL
 	fi
 
+	[[ -z $VENDORCOLOR ]] && VENDORCOLOR="247;16;0"                           # RGB values for MOTD logo
 	[[ -z $VENDORURL ]] && VENDORURL="https://duckduckgo.com/"
 	[[ -z $VENDORSUPPORT ]] && VENDORSUPPORT="https://community.armbian.com/"
 	[[ -z $VENDORPRIVACY ]] && VENDORPRIVACY="https://duckduckgo.com/"
@@ -93,8 +94,6 @@ function do_main_configuration() {
 		display_alert "Host has no /etc/timezone" "Using Etc/UTC by default" "debug"
 		TZDATA="Etc/UTC" # If not /etc/timezone at host, default to UTC.
 	fi
-
-	USEALLCORES=yes # Use all CPU cores for compiling
 
 	[[ -z $EXIT_PATCHING_ERROR ]] && EXIT_PATCHING_ERROR="" # exit patching if failed
 	[[ -z $HOST ]] && HOST="$BOARD"
@@ -318,6 +317,9 @@ function do_main_configuration() {
 			;;
 	esac
 
+        # enable APA extension for Debian Unstable release
+        [ "$RELEASE" = "sid" ] && enable_extension "apa"
+
 	## Extensions: at this point we've sourced all the config files that will be used,
 	##             and (hopefully) not yet invoked any extension methods. So this is the perfect
 	##             place to initialize the extension manager. It will create functions
@@ -368,14 +370,14 @@ function do_extra_configuration() {
 	fi
 
 	DEBIAN_MIRROR='deb.debian.org/debian'
-	DEBIAN_SECURTY='security.debian.org/'
+	DEBIAN_SECURITY='security.debian.org/'
 	[[ "${ARCH}" == "amd64" ]] &&
 		UBUNTU_MIRROR='archive.ubuntu.com/ubuntu/' ||
 		UBUNTU_MIRROR='ports.ubuntu.com/'
 
 	if [[ $DOWNLOAD_MIRROR == "china" ]]; then
 		DEBIAN_MIRROR='mirrors.tuna.tsinghua.edu.cn/debian'
-		DEBIAN_SECURTY='mirrors.tuna.tsinghua.edu.cn/debian-security'
+		DEBIAN_SECURITY='mirrors.tuna.tsinghua.edu.cn/debian-security'
 		[[ "${ARCH}" == "amd64" ]] &&
 			UBUNTU_MIRROR='mirrors.tuna.tsinghua.edu.cn/ubuntu/' ||
 			UBUNTU_MIRROR='mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/'
@@ -383,7 +385,7 @@ function do_extra_configuration() {
 
 	if [[ $DOWNLOAD_MIRROR == "bfsu" ]]; then
 		DEBIAN_MIRROR='mirrors.bfsu.edu.cn/debian'
-		DEBIAN_SECURTY='mirrors.bfsu.edu.cn/debian-security'
+		DEBIAN_SECURITY='mirrors.bfsu.edu.cn/debian-security'
 		[[ "${ARCH}" == "amd64" ]] &&
 			UBUNTU_MIRROR='mirrors.bfsu.edu.cn/ubuntu/' ||
 			UBUNTU_MIRROR='mirrors.bfsu.edu.cn/ubuntu-ports/'
